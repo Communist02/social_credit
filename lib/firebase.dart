@@ -71,7 +71,7 @@ class CloudStore {
       final CollectionReference socialCreditBase = _firestore.collection('socialCredit');
       final result = await socialCreditBase.where('idAccount', isEqualTo: account.id).get();
       List<Act> acts = [];
-      for (var act in result.docs) {
+      for (final act in result.docs) {
         if (act['idAccount'] == account.id) {
           acts.add(
             Act(
@@ -89,7 +89,7 @@ class CloudStore {
       final socialCreditBase = firestore.collection('socialCredit');
       final result = await socialCreditBase.where('idAccount', isEqualTo: account.id).get();
       List<Act> acts = [];
-      for (var act in result) {
+      for (final act in result) {
         if (act['idAccount'] == account.id) {
           acts.add(
             Act(
@@ -112,7 +112,7 @@ class CloudStore {
       final resultSocialCredit = await socialCreditBase.get();
       final resultAccounts = await accountsBase.get();
       List<Act> acts = [];
-      for (var act in resultSocialCredit.docs) {
+      for (final act in resultSocialCredit.docs) {
         if (true) {
           acts.add(
             Act(
@@ -128,7 +128,7 @@ class CloudStore {
       acts.sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
       List<Student> students = [];
-      for (var student in resultAccounts.docs) {
+      for (final student in resultAccounts.docs) {
         students.add(Student(idAccount: student.id, name: student['nickname']));
       }
       return Students(students: students, acts: acts);
@@ -139,7 +139,7 @@ class CloudStore {
       final resultSocialCredit = await socialCreditBase.get();
       final resultAccounts = await accountsBase.get();
       List<Act> acts = [];
-      for (var act in resultSocialCredit) {
+      for (final act in resultSocialCredit) {
         if (true) {
           acts.add(
             Act(
@@ -155,7 +155,7 @@ class CloudStore {
       acts.sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
       List<Student> students = [];
-      for (var student in resultAccounts) {
+      for (final student in resultAccounts) {
         students.add(Student(idAccount: student.id, name: student['nickname']));
       }
       return Students(students: students, acts: acts);
@@ -186,6 +186,7 @@ class CloudStore {
   }
 
   Future<bool> removeAct(String id) async {
+
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.windows) {
       final CollectionReference socialCredit = _firestore.collection('socialCredit');
       socialCredit.doc(id).delete();
@@ -195,6 +196,24 @@ class CloudStore {
       final socialCredit = firestore.collection('socialCredit');
       socialCredit.document(id).delete();
       return true;
+    }
+  }
+
+  Future<Map<String, int>> getTable() async {
+    Map<String, int> table = {};
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.windows) {
+      final socialCreditSystem = await _firestore.collection('vars').doc('socialCreditSystem').get();
+      for (final act in socialCreditSystem['table'].entries) {
+        table[act.key] = act.value.toInt();
+      }
+      return table;
+    } else {
+      final Firestore firestore = Firestore('unified-database');
+      final socialCreditSystem = await firestore.collection('socialCredit').document('socialCreditSystem').get();
+      for (final act in socialCreditSystem['table'].entries) {
+        table[act.key] = act.value.toInt();
+      }
+      return table;
     }
   }
 }

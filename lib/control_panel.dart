@@ -62,10 +62,12 @@ class _ControlPanelPageState extends State<ControlPanelPage> {
                     student.acts.length,
                     (index) => OutlinedButton(
                       onPressed: isEdit ? () {} : null,
-                      onLongPress: isEdit ? () async {
-                        await _cloudStore.removeAct(student.acts[index].id);
-                        setState(() {});
-                      } : null,
+                      onLongPress: isEdit
+                          ? () async {
+                              await _cloudStore.removeAct(student.acts[index].id);
+                              setState(() {});
+                            }
+                          : null,
                       child: Text('${student.acts[index].name} (${student.acts[index].score})'),
                     ),
                   ),
@@ -86,7 +88,8 @@ class _ControlPanelPageState extends State<ControlPanelPage> {
 
     DataTable table(Students students) {
       return DataTable(
-        dataRowHeight: 70,
+        dataRowMinHeight: 70,
+        dataRowMaxHeight: 70,
         border: TableBorder.all(color: Colors.grey.withOpacity(0.3)),
         columns: const [
           DataColumn(label: Text('ФИО')),
@@ -110,6 +113,10 @@ class _ControlPanelPageState extends State<ControlPanelPage> {
           );
         }),
       );
+    }
+
+    getTable() async {
+      acts = await _cloudStore.getTable();
     }
 
     return Scaffold(
@@ -143,6 +150,7 @@ class _ControlPanelPageState extends State<ControlPanelPage> {
                 child: FutureBuilder(
                   future: _cloudStore.getSocialCreditAll(),
                   builder: (context, snapshot) {
+                    getTable();
                     if (snapshot.hasData) {
                       return table(snapshot.data as Students);
                     } else if (snapshot.hasError) {

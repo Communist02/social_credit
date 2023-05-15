@@ -63,11 +63,13 @@ class _SocialCreditPageState extends State<SocialCreditPage> {
     List<Widget> list = [];
     for (Act act in acts) {
       list.add(
-        ListTile(
-          leading: Text(DateFormat('dd.MM.yy\nHH:mm').format(act.dateTime)),
-          title: Text('${act.score >= 0 ? '+' : ''}${act.score} баллов',
-              style: TextStyle(color: act.score < 0 ? Colors.red : Colors.green)),
-          subtitle: Text(act.name),
+        Card(
+          child: ListTile(
+            leading: Text(DateFormat('dd.MM.yy\nHH:mm').format(act.dateTime)),
+            title: Text('${act.score >= 0 ? '+' : ''}${act.score} баллов',
+                style: TextStyle(color: act.score < 0 ? Colors.red : Colors.green)),
+            subtitle: Text(act.name),
+          ),
         ),
       );
     }
@@ -160,7 +162,7 @@ class _SocialCreditPageState extends State<SocialCreditPage> {
             ),
             floatingActionButton: FloatingActionButton(
               tooltip: 'Профиль',
-              onPressed: () => Navigator.pushReplacementNamed(context, '/profile'),
+              onPressed: () => Navigator.pushNamed(context, '/profile'),
               child: const Icon(Icons.person_outlined),
             ),
           );

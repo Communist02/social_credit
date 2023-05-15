@@ -45,6 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
               await authService.signOut();
               setState(() {
                 account.clear();
+                Navigator.of(context).pushNamedAndRemoveUntil('/profile', (Route<dynamic> route) => false);
               });
             },
           ),
@@ -457,8 +458,9 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: account.id != null && !_reg
           ? AppBar(
               leading: IconButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, '/social-credit'),
                 icon: const Icon(Icons.arrow_back_ios_new),
+                tooltip: 'Назад',
+                onPressed: () => Navigator.pop(context),
               ),
             )
           : null,
