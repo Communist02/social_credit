@@ -2,14 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:social_credit/classes.dart';
 import 'firebase.dart';
 
-Map<String, int> acts = {
-  'Посещение пары': 5,
-  'Пропуск пары': -5,
-  'Сходил на субботник': 500,
-  'Сказал, что ВВГУ плохой ВУЗ': -1000,
-  'Не поздоровался с преподавателем': -1000,
-};
-
+Map<String, int> acts = {};
 bool isEdit = false;
 
 class ControlPanelPage extends StatefulWidget {
@@ -24,7 +17,7 @@ class _ControlPanelPageState extends State<ControlPanelPage> {
 
   @override
   Widget build(BuildContext context) {
-    PopupMenuButton<dynamic> addAct(String idAccount) {
+    PopupMenuButton addAct(String idAccount) {
       return PopupMenuButton(
         tooltip: 'Добавить событие',
         padding: EdgeInsets.zero,
@@ -40,7 +33,87 @@ class _ControlPanelPageState extends State<ControlPanelPage> {
             );
           }).toList();
         },
-        child: const ElevatedButton(onPressed: null, child: Text('+')),
+        child: const Card(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('+'),
+          ),
+        ),
+      );
+    }
+
+    PopupMenuButton editAct(Act act) {
+      return PopupMenuButton(
+        tooltip: '',
+        padding: EdgeInsets.zero,
+        enabled: isEdit,
+        itemBuilder: (BuildContext context) {
+          return [
+            PopupMenuItem(
+              child: const Text('Редактировать'),
+              onTap: () async {
+                await Future.delayed(const Duration(milliseconds: 100));
+                if (!mounted) return;
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    String name = act.name;
+                    int score = act.score;
+                    return SimpleDialog(
+                      title: const Text('Редактирование'),
+                      contentPadding: const EdgeInsets.all(10),
+                      children: [
+                        TextFormField(
+                          initialValue: name,
+                          decoration: const InputDecoration(labelText: 'Название события'),
+                          onChanged: (value) => name = value,
+                        ),
+                        TextFormField(
+                          initialValue: score.toString(),
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(labelText: 'Баллы'),
+                          onChanged: (value) {
+                            int? scoreTEMP = int.tryParse(value);
+                            if (scoreTEMP != null) {
+                              score = scoreTEMP;
+                            } else {
+                              score = 0;
+                            }
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              act.name = name;
+                              act.score = score;
+                              await _cloudStore.editAct(act);
+                              setState(() {});
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            PopupMenuItem(
+              child: const Text('Удалить'),
+              onTap: () async {
+                await _cloudStore.removeAct(act.id);
+                setState(() {});
+              },
+            ),
+          ];
+        },
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('${act.name} (${act.score})'),
+          ),
+        ),
       );
     }
 
@@ -58,19 +131,7 @@ class _ControlPanelPageState extends State<ControlPanelPage> {
               spacing: 2,
               runSpacing: 2,
               children: <Widget>[if (isEdit) addAct(student.idAccount)] +
-                  List<Widget>.generate(
-                    student.acts.length,
-                    (index) => OutlinedButton(
-                      onPressed: isEdit ? () {} : null,
-                      onLongPress: isEdit
-                          ? () async {
-                              await _cloudStore.removeAct(student.acts[index].id);
-                              setState(() {});
-                            }
-                          : null,
-                      child: Text('${student.acts[index].name} (${student.acts[index].score})'),
-                    ),
-                  ),
+                  List<Widget>.generate(student.acts.length, (index) => editAct(student.acts[index])),
             ),
           );
         } else {

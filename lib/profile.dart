@@ -31,6 +31,14 @@ class _ProfilePageState extends State<ProfilePage> {
         Container(
           height: 70,
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          child: ElevatedButton(
+            onPressed: () => Navigator.pushReplacementNamed(context, '/control-panel'),
+            child: const Text('Control Panel'),
+          ),
+        ),
+        Container(
+          height: 70,
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
           child: OutlinedButton(
             style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -58,8 +66,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       children: [
-        ElevatedButton(
-            onPressed: () => Navigator.pushReplacementNamed(context, '/control-panel'), child: const Text('Control Panel')),
         Container(
           margin: const EdgeInsets.only(top: 40),
           child: const Center(

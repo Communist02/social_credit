@@ -174,8 +174,31 @@ class CloudStore {
       return true;
     } else {
       final Firestore firestore = Firestore('unified-database');
-      final socialCreditBase = firestore.collection('socialCredit');
-      await socialCreditBase.add({
+      final actsBase = firestore.collection('socialCredit');
+      await actsBase.add({
+        'dateTime': act.dateTime,
+        'idAccount': act.idAccount,
+        'name': act.name,
+        'score': act.score,
+      });
+      return true;
+    }
+  }
+
+  Future<bool> editAct(Act act) async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.windows) {
+      final CollectionReference actsBase = _firestore.collection('socialCredit');
+      await actsBase.doc(act.id).update({
+        'dateTime': act.dateTime,
+        'idAccount': act.idAccount,
+        'name': act.name,
+        'score': act.score,
+      });
+      return true;
+    } else {
+      final Firestore firestore = Firestore('unified-database');
+      final actsBase = firestore.collection('socialCredit');
+      await actsBase.document(act.id).update({
         'dateTime': act.dateTime,
         'idAccount': act.idAccount,
         'name': act.name,
@@ -189,12 +212,12 @@ class CloudStore {
 
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.windows) {
       final CollectionReference socialCredit = _firestore.collection('socialCredit');
-      socialCredit.doc(id).delete();
+      await socialCredit.doc(id).delete();
       return true;
     } else {
       final Firestore firestore = Firestore('unified-database');
       final socialCredit = firestore.collection('socialCredit');
-      socialCredit.document(id).delete();
+      await socialCredit.document(id).delete();
       return true;
     }
   }
@@ -209,7 +232,7 @@ class CloudStore {
       return table;
     } else {
       final Firestore firestore = Firestore('unified-database');
-      final socialCreditSystem = await firestore.collection('socialCredit').document('socialCreditSystem').get();
+      final socialCreditSystem = await firestore.collection('vars').document('socialCreditSystem').get();
       for (final act in socialCreditSystem['table'].entries) {
         table[act.key] = act.value.toInt();
       }
