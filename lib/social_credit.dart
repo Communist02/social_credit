@@ -4,7 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'classes.dart';
 import 'firebase.dart';
-import 'main.dart';
+
+int lastCredit = 500;
 
 class SocialCreditPage extends StatefulWidget {
   const SocialCreditPage({Key? key}) : super(key: key);
@@ -84,18 +85,20 @@ class _SocialCreditPageState extends State<SocialCreditPage> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
+
     dialog() {
       if (credit != lastCredit) {
         if (credit <= 200 && lastCredit > 200) {
           showDialog(
             context: context,
             builder: (context) => SimpleDialog(
+              contentPadding: const EdgeInsets.only(top: 22),
               children: [
                 const Image(image: AssetImage('assets/images/social_credit_low.jpg')),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Спасибо'),
-                )
+                ),
               ],
             ),
           );
@@ -103,6 +106,7 @@ class _SocialCreditPageState extends State<SocialCreditPage> {
           showDialog(
             context: context,
             builder: (context) => SimpleDialog(
+              contentPadding: const EdgeInsets.only(top: 22),
               children: [
                 const Image(image: AssetImage('assets/images/social_credit_high.jpg')),
                 TextButton(

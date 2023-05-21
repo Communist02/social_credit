@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'control_panel.dart';
 import 'firebase.dart';
 import 'global.dart';
@@ -9,15 +8,8 @@ import 'firebase_options.dart';
 import 'social_credit.dart';
 import 'package:flutter/foundation.dart';
 
-int lastCredit = 500;
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
-
-  int? credit = prefs.getInt('lastCredit');
-  if (credit != null) lastCredit = credit;
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
